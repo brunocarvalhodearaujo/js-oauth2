@@ -1,0 +1,8 @@
+# folders
+src/
+
+# files
+.babelrc
+.gitignore
+.editorconfig
+README.md
