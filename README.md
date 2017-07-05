@@ -37,8 +37,8 @@ choose your preferred method:
 
 ````js
 import OAuth from 'js-oauth2'
-import { BrowserStorage } from 'js-oauth2/dist/storage/BrowserStorage'
-import { NativeStorage } from 'js-oauth2/dist/storage/NativeStorage'
+import { BrowserStorage } from 'js-oauth2/dist/Storage/BrowserStorage'
+import { NativeStorage } from 'js-oauth2/dist/Storage/NativeStorage'
 ````
 
 #### API
@@ -47,13 +47,11 @@ initialize library:
 
 ```js
 const oauth = OAuth({
-  configure: {
-    baseUrl: 'http://api.example.com',
-    clientId: 'test',
-    clientSecret: 'test',
-    grantPath: '/oauth/token',
-    revokePath: '/oauth/revoke'
-  },
+  baseUrl: 'http://api.example.com',
+  clientId: 'test',
+  clientSecret: 'test',
+  grantPath: '/oauth/token',
+  revokePath: '/oauth/revoke',
   storage: new BrowserStorage() // or new NativeStorage() for react-native
 })
 
@@ -64,7 +62,7 @@ Check authentication status:
 /**
  * Verifies if the `user` is authenticated or not based on the `token`
  * cookie.
- * @return {boolean}
+ * @return {Promise<boolean>}
  */
 oauth.isAuthenticated()
 ```

@@ -1,13 +1,20 @@
 export class AbstractStorage {
-  set (key, value) {
-    throw new Error('need implements')
-  }
+  /**
+   * @param {string} key
+   * @param {any} value
+   * @returns {Promise<void>}
+   */
+  set (key, value) {}
 
-  get (key) {
-    throw new Error('need implements')
-  }
+  /**
+   * @param {string} key
+   * @returns {Promise<void>}
+   */
+  remove (key) {}
 
-  remove (key) {
-    throw new Error('need implements')
-  }
+  /**
+   * @param {string} key
+   * @returns {Promise<string>}
+   */
+  get (key) {}
 }

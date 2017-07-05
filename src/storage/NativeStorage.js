@@ -2,27 +2,27 @@ import { AbstractStorage } from './AbstractStorage'
 import { AsyncStorage } from 'react-native'
 
 export class NativeStorage extends AbstractStorage {
-  async set (key, value) {
-    try {
-      return await AsyncStorage.setItem(key, value)
-    } catch (error) {
-      throw error
-    }
+  set (key, value) {
+    return new Promise((resolve, reject) => {
+      AsyncStorage.setItem(key)
+        .then(resolve)
+        .catch(reject)
+    })
   }
 
-  async get (key) {
-    try {
-      return await AsyncStorage.getItem(key)
-    } catch (error) {
-      throw error
-    }
+  get (key) {
+    return new Promise((resolve, reject) => {
+      AsyncStorage.getItem(key)
+        .then(resolve)
+        .catch(reject)
+    })
   }
 
-  async remove (key) {
-    try {
-      return await AsyncStorage.removeItem(key)
-    } catch (error) {
-      throw error
-    }
+  remove (key) {
+    return new Promise((resolve, reject) => {
+      AsyncStorage.removeItem(key)
+        .then(resolve)
+        .catch(reject)
+    })
   }
 }

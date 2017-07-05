@@ -1,10 +1,10 @@
 /* global fetch */
-import { merge, forEach } from 'lodash'
-import { stringify } from 'query-string'
-import { Token } from './Token'
-import { HttpRequestInterceptor } from './HttpRequestInterceptor'
+import { KeyChain } from './KeyChain'
+import omit from 'lodash.omit'
 import interceptor from 'fetch-intercept'
+import { stringify } from 'querystring'
 import { EventEmitter } from 'events'
+import { HttpRequestInterceptor } from './HttpRequestInterceptor'
 
 const DEFAULT = {
   baseUrl: null,
@@ -20,11 +20,13 @@ export default class OAuth {
       throw new Error('Invalid argument: `config` must be an `Object`.')
     }
 
-    // Extend default configuration.
-    const config = merge(DEFAULT, params)
+    if (!params.hasOwnProperty('storage')) {
+      throw new Error('`Storage` nao foi definido')
+    }
 
-    // Check if all required keys are set.
-    forEach([ 'baseUrl', 'clientId', 'grantPath', 'revokePath', 'storage' ], key => {
+    const config = Object.assign(DEFAULT, params)
+
+    Object.keys(DEFAULT).forEach(key => {
       if (!config[key]) {
         throw new Error(`Missing parameter: ${key}.`)
       }
@@ -44,10 +46,11 @@ export default class OAuth {
     if (config.revokePath[0] !== '/') {
       config.revokePath = `/${config.revokePath}`
     }
-    this.config = config
-    this.token = new Token(config.storage)
+
+    this.keychain = new KeyChain(config.baseUrl, config.storage)
+    this.config = omit(config, 'storage')
     this.emitter = new EventEmitter()
-    this.interceptor = interceptor.register(new HttpRequestInterceptor(config.baseUrl, this.token, this.emitter))
+    this.interceptor = interceptor.register(new HttpRequestInterceptor(config.baseUrl, this.keychain, this.emitter))
   }
 
   /**
@@ -59,22 +62,19 @@ export default class OAuth {
    * @return {Promise<object>} A response promise.
    */
   getAccessToken (data, options = {}) {
-    data = merge({ client_id: this.config.clientId, grant_type: 'password' }, data)
+    data = Object.assign({ client_id: this.config.clientId, grant_type: 'password' }, data)
 
     if (this.config.clientSecret !== null) {
       data.client_secret = this.config.clientSecret
     }
 
-    options = merge({
+    options = Object.assign({
       headers: { 'Authorization': undefined, 'Content-Type': 'application/x-www-form-urlencoded' }
     }, options, { method: 'POST', body: stringify(data) })
 
     return fetch(`${this.config.baseUrl}${this.config.grantPath}`, options)
       .then(response => response.json())
-      .then(response => {
-        this.token.setToken(response)
-        return response
-      })
+      .then(response => this.keychain.setToken(response).then(() => response))
   }
 
   /**
@@ -85,9 +85,9 @@ export default class OAuth {
    * @param {object} options - Optional configuration.
    * @return {Promise<object>} A response promise.
    */
-  getRefreshToken (data, options = {}) {
-    const { refreshToken } = this.token.getToken()
-    data = merge({
+  async getRefreshToken (data, options = {}) {
+    const { refreshToken } = await this.keychain.getToken()
+    data = Object.assign({
       client_id: this.config.clientId,
       grant_type: 'refresh_token',
       refresh_token: refreshToken
@@ -97,16 +97,13 @@ export default class OAuth {
       data.client_secret = this.config.clientSecret
     }
 
-    options = merge({
+    options = Object.assign({
       headers: { 'Authorization': undefined, 'Content-Type': 'application/x-www-form-urlencoded' }
     }, options, { method: 'POST', body: stringify(data) })
 
     return fetch(`${this.config.baseUrl}${this.config.grantPath}`, options)
       .then(response => response.json())
-      .then(response => {
-        this.token.setToken(response)
-        return response
-      })
+      .then(response => this.keychain.setToken(response).then(() => response))
   }
 
   /**
@@ -117,10 +114,10 @@ export default class OAuth {
    * @param {object} options - Optional configuration.
    * @return {Promise<object>} A response promise.
    */
-  revokeToken (data, options) {
-    const { refreshToken, accessToken } = this.token.getToken()
+  async revokeToken (data, options) {
+    const { refreshToken, accessToken } = await this.keychain.getToken()
 
-    data = merge({
+    data = Object.assign({
       client_id: this.config.clientId,
       token: refreshToken || accessToken,
       token_type_hint: refreshToken ? 'refresh_token' : 'access_token'
@@ -130,21 +127,21 @@ export default class OAuth {
       data.client_secret = this.config.clientSecret
     }
 
-    options = merge({
+    options = Object.assign({
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     }, options, { method: 'POST', body: stringify(data) })
 
     return fetch(`${this.config.baseUrl}${this.config.revokePath}`, options)
       .then(response => response.json())
-      .then(response => {
-        this.token.removeToken()
-        return response
-      })
+      .then(response => this.keychain.removeToken().then(() => response))
   }
 
+  /**
+   * @returns {Promise<boolean>}
+   */
   isAuthenticated () {
-    const { accessToken } = this.token.getToken()
-    return Boolean(accessToken)
+    return this.keychain.getToken()
+      .then(({ accessToken }) => Boolean(accessToken))
   }
 
   onError (callback) {

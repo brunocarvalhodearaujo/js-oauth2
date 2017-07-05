@@ -1,37 +1,34 @@
 {
   "name": "js-oauth2",
-  "version": "0.0.1",
-  "description": "oauth2 authentication module for webpack, browserify and react-native",
-  "author": "Bruno Carvalho de Araujo <brunocarvalhodearaujo@gmail.com>",
-  "main": "dist/index.js",
+  "version": "0.0.2",
+  "description": "",
   "keywords": [
     "oauth2",
     "webpack",
     "browserify",
-    "react",
     "fetch",
+    "react",
+    "angular2",
     "react-native"
   ],
+  "license": "MIT",
+  "author": "Bruno Carvalho de Araujo <brunocarvalhodearaujo@gmail.com>",
+  "main": "src/index.js",
   "repository": {
     "url": "https://github.com/brunocarvalhodearaujo/js-oauth2.git",
     "type": "git"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "prepublish": "babel src --out-dir dist"
   },
-  "devDependencies": {
-    "babel-cli": "^6.24.1",
-    "babel-preset-es2015": "^6.24.1"
-  },
   "peerDependencies": {
+    "js-cookie": "^2.1.4",
     "react-native": "^0.45.1"
   },
   "dependencies": {
     "events": "^1.1.1",
     "fetch-intercept": "^2.2.3",
-    "js-cookie": "^2.1.4",
-    "lodash": "^4.17.4",
-    "query-string": "^4.3.4"
+    "lodash.omit": "^4.5.0",
+    "lodash.pickby": "^4.6.0"
   }
 }
