@@ -1,4 +1,4 @@
-import { AbstractStorage } from './Storage/AbstractStorage'
+import { AbstractStorage } from './storage/AbstractStorage'
 import pickBy from 'lodash.pickby'
 
 export class KeyChain {
