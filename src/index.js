@@ -75,6 +75,11 @@ export default class OAuth {
     return fetch(`${this.config.baseUrl}${this.config.grantPath}`, options)
       .then(response => response.json())
       .then(response => this.keychain.setToken(response).then(() => response))
+      .then(T => new Promise((resolve, reject) => {
+        !T.hasOwnProperty('access_token')
+          ? resolve(T)
+          : reject(new Error('usuario ou senha invalidos'))
+      }))
   }
 
   /**

@@ -46,7 +46,7 @@ import { NativeStorage } from 'js-oauth2/dist/Storage/NativeStorage'
 initialize library:
 
 ```js
-const oauth = OAuth({
+const oauth = new OAuth({
   baseUrl: 'http://api.example.com',
   clientId: 'test',
   clientSecret: 'test',
