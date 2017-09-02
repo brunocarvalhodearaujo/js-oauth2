@@ -149,7 +149,7 @@ export class OAuth2 {
    */
   isAuthenticated () {
     return this.keychain.getToken()
-      .then(token => (typeof token === 'object' && token['access_token']))
+      .then(token => Boolean(typeof token === 'object' && token['access_token']))
   }
 
   /**
