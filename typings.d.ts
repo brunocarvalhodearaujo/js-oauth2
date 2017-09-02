@@ -27,4 +27,5 @@ declare class OAuth2 {
   stopHttpIntercept (): void
 }
 
-export = { OAuth2, AbstractKeychain: Keychain }
+export default OAuth2
+export { Keychain as AbstractKeychain }
