@@ -1,48 +1,40 @@
-import { AbstractStorage } from './storage/AbstractStorage'
-import pickBy from 'lodash.pickby'
-
-export class KeyChain {
+/**
+ * @typedef {{ access_token: string, refresh_token: string, expires_in:number, token_type: string }} Token
+ */
+export class Keychain {
   /**
-   * @param {string} namespace
-   * @param {AbstractStorage} storage
+   * @param {Token} value
+   * @returns {Promise<void>}
    */
-  constructor (namespace, storage) {
-    if (!(storage instanceof AbstractStorage)) {
-      throw new Error('OAuthToken requires an implementation of `Storage`')
-    }
-    this.namespace = namespace
-    this.storage = storage
+  setToken (value) {
+    throw new Error('`Keychain` model does not implement `setToken()`')
   }
 
-  setToken (data) {
-    return this.storage.set(`${this.namespace}:token`, JSON.stringify(data))
-  }
-
-  removeToken () {
-    return this.storage.remove(`${this.namespace}:token`)
-  }
-
+  /**
+   * @returns {Promise<Token>}
+   */
   getToken () {
-    return this.storage.get(`${this.namespace}:token`).then(result => {
-      if (!result) {
-        return {}
-      }
-      const { token_type, expires_in, access_token, refresh_token } = JSON.parse(result)
-      return pickBy({
-        tokenType: token_type,
-        expiresIn: expires_in,
-        accessToken: access_token,
-        refreshToken: refresh_token
-      })
-    })
+    throw new Error('`Keychain` model does not implement `getToken()`')
   }
 
+  /**
+   * @returns {Promise<void>}
+   */
+  removeToken () {
+    throw new Error('`Keychain` model does not implement `removeToken()`')
+  }
+
+  /**
+   * generate authorization header using token in storage
+   *
+   * @returns {Promise<string>}
+   */
   getAuthorizationHeader () {
-    return this.getToken().then(({ tokenType, accessToken }) => {
-      if (!tokenType || !accessToken) {
+    return this.getToken().then(token => {
+      if (!token.token_type || !token.access_token) {
         return undefined
       }
-      return `${tokenType.charAt(0).toUpperCase() + tokenType.substr(1)} ${accessToken}`
+      return `${token.token_type.charAt(0).toUpperCase() + token.token_type.substr(1)} ${token.access_token}`
     })
   }
 }
