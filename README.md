@@ -36,7 +36,7 @@ choose your preferred method:
 ### Usage
 
 ````js
-import OAuth2, { AbstractKeychain } from 'oauth2-js'
+import OAuth2, { AbstractKeychain } from 'js-oauth2'
 import cookie from 'js-cookie'
 
 // implementation of storage
