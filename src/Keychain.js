@@ -31,7 +31,7 @@ export class Keychain {
    */
   getAuthorizationHeader () {
     return this.getToken().then(token => {
-      if (!token.token_type || !token.access_token) {
+      if (!token || !token.token_type || !token.access_token) {
         return undefined
       }
       return `${token.token_type.charAt(0).toUpperCase() + token.token_type.substr(1)} ${token.access_token}`
