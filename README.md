@@ -36,9 +36,23 @@ choose your preferred method:
 ### Usage
 
 ````js
-import OAuth from 'js-oauth2'
-import { BrowserStorage } from 'js-oauth2/dist/Storage/BrowserStorage'
-import { NativeStorage } from 'js-oauth2/dist/Storage/NativeStorage'
+import OAuth2, { AbstractKeychain } from 'oauth2-js'
+import cookie from 'js-cookie'
+
+// implementation of storage
+class Keychain extends AbstractKeychain {
+  setToken (value) {
+    return new Promise((resolve) => resolve(cookie.set('token', value)))
+  }
+
+  getToken () {
+    return new Promise((resolve) => resolve(cookie.getJSON('token')))
+  }
+
+  removeToken () {
+    return new Promise((resolve) => resolve(cookie.remove('token')))
+  }
+}
 ````
 
 #### API
@@ -46,15 +60,16 @@ import { NativeStorage } from 'js-oauth2/dist/Storage/NativeStorage'
 initialize library:
 
 ```js
-const oauth = new OAuth({
+const config = {
   baseUrl: 'http://api.example.com',
   clientId: 'test',
   clientSecret: 'test',
   grantPath: '/oauth/token',
   revokePath: '/oauth/revoke',
-  storage: new BrowserStorage() // or new NativeStorage() for react-native
-})
+  keychain: new Keychain()
+}
 
+const oauth = new OAuth2(config)
 ```
 Check authentication status:
 
@@ -75,7 +90,7 @@ Get an access token:
  * using the `OAuthToken`.
  * @param {object} user - Object with `username` and `password` properties.
  * @param {object} config - Optional configuration object sent to `POST`.
- * @return {promise} A response promise.
+ * @return {Promise} A response promise.
  */
 
 oauth.getAccessToken(user, options)
@@ -87,7 +102,7 @@ Refresh access token:
 /**
  * Retrieves the `refresh_token` and stores the `response.data` on cookies
  * using the `OAuthToken`.
- * @return {promise} A response promise.
+ * @return {Promise} A response promise.
  */
 
 oauth.getRefreshToken()
@@ -99,7 +114,7 @@ Revoke access token:
 /**
  * Revokes the `token` and removes the stored `token` from cookies
  * using the `OAuthToken`.
- * @return {promise} A response promise.
+ * @return {Promise} A response promise.
  */
 
 oauth.revokeToken()

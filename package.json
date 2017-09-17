@@ -1,14 +1,14 @@
 {
   "name": "js-oauth2",
   "version": "0.0.9",
-  "description": "",
+  "description": "OAuth2 authentication module written in vanilla ES6",
   "keywords": [
     "oauth2",
     "webpack",
     "browserify",
     "fetch",
-    "react",
     "angular2",
+    "react",
     "react-native"
   ],
   "license": "MIT",
@@ -20,7 +20,7 @@
     "type": "git"
   },
   "scripts": {
-    "postinstall": "babel src --out-dir dist"
+    "prepublish": "babel src --out-dir dist"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -31,7 +31,6 @@
     "fetch-intercept": "^2.2.3",
     "is": "^3.2.1",
     "lodash.omit": "^4.5.0",
-    "lodash.pickby": "^4.6.0",
     "querystring": "^0.2.0"
   }
 }
