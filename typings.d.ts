@@ -1,5 +1,14 @@
-type Token = { access_token: string, token_type: string, expires_in: number, refresh_token: string }
-type User = { username: string, password: string }
+type Token = {
+  access_token: string,
+  token_type: string,
+  expires_in: number,
+  refresh_token: string
+}
+
+type User = {
+  username: string,
+  password: string
+}
 
 declare class Keychain {
   setToken (token: Token): Promise<void>
