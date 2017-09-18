@@ -1,9 +1,8 @@
 {
   "plugins": [
-    "syntax-async-functions",
-    "transform-regenerator"
+    ["transform-runtime", { "polyfill": false }]
   ],
   "presets": [
-    "es2015"
+    "latest"
   ]
 }
