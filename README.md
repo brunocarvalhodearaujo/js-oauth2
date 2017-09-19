@@ -37,14 +37,10 @@ choose your preferred method:
 initialize library:
 
 ````js
-// Keychain.js
 import OAuth2, { AbstractKeychain } from 'js-oauth2'
-import cookie from 'js-cookie'
+import cookie from 'js-cookie' // install separated
 
-/**
- * implementation of storage
- * @typedef {{ access_token: string, refresh_token: string, expires_in:number, token_type: string }} Token
- */
+// implementation of storage
 class Keychain extends AbstractKeychain {
   /**
    * @param {Token} value
@@ -142,6 +138,7 @@ Catch OAuth errors and do something with them (optional):
 /**
  * @param {Response} response
  */
+
 async function onError (response)  {
   const data = await response.clone().json()
   if (data.error === 'invalid_grant') {
