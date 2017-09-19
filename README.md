@@ -5,7 +5,6 @@ js-oauth2
 [![License](https://img.shields.io/npm/l/js-oauth2.svg)](https://www.npmjs.com/package/js-oauth2) 
 [![Dependency Status](https://david-dm.org/brunocarvalhodearaujo/js-oauth2.svg?style=flat-square)](https://david-dm.org/brunocarvalhodearaujo/js-oauth2)
 [![devDependency Status](https://david-dm.org/brunocarvalhodearaujo/js-oauth2/dev-status.svg?style=flat-square)](https://david-dm.org/brunocarvalhodearaujo/js-oauth2#info=devDependencies)
-[![optionalDependency Status](https://david-dm.org/brunocarvalhodearaujo/js-oauth2/optional-status.svg?style=flat-square)](https://david-dm.org/brunocarvalhodearaujo/js-oauth2#info=optionalDependencies)
 [![npm](https://img.shields.io/npm/dt/js-oauth2.svg)]()
 
 This library is a port of angular-oauth2 to vanilla JS and fetch. Currently, this library only uses the password

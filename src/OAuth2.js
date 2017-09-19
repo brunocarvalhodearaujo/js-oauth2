@@ -4,11 +4,11 @@ import omit from 'lodash.omit'
 import { stringify } from 'querystring'
 import { Keychain } from './Keychain'
 import { EventEmitter } from 'events'
-import { HttpRequestIntercept } from './HttpRequestIntercept'
+import { HttpInterceptor } from './HttpInterceptor'
 import fetchIntercept from 'fetch-intercept'
 
 /**
- * @type {{ baseUrl: string, clientId: string, clientSecret: string, grantPath: string, revokePath: string, keychain: Keychain }}
+ * @type {{ baseUrl: string, clientId: string, clientSecret: string, grantPath: string, revokePath: string, interceptRequest: boolean, keychain: Keychain }}
  */
 const DEFAULT = {
   baseUrl: null,
@@ -16,6 +16,7 @@ const DEFAULT = {
   clientSecret: null,
   grantPath: '/oauth2/token',
   revokePath: '/oauth2/revoke',
+  interceptRequest: true,
   keychain: new Keychain()
 }
 
@@ -54,10 +55,15 @@ export class OAuth2 {
       config.revokePath = `/${config.revokePath}`
     }
 
+    /**
+     * @type {config}
+     */
     this.config = omit(config, 'keychain')
     this.keychain = config.keychain
-    this.emitter = new EventEmitter()
-    this.interceptor = fetchIntercept.register(new HttpRequestIntercept(config.baseUrl, this.keychain, this.emitter))
+    if (config.interceptRequest) {
+      this.emitter = new EventEmitter()
+      this.interceptor = fetchIntercept.register(new HttpInterceptor(config.baseUrl, this.keychain, this.emitter))
+    }
   }
 
   /**
@@ -156,10 +162,14 @@ export class OAuth2 {
    * @param {function} callback
    */
   onError (callback) {
-    this.emitter.on('oauth:error', callback)
+    if (this.config.interceptRequest) {
+      this.emitter.on('oauth:error', callback)
+    }
   }
 
   stopHttpIntercept () {
-    this.interceptor.unregister()
+    if (this.config.interceptRequest) {
+      this.interceptor.unregister()
+    }
   }
 }

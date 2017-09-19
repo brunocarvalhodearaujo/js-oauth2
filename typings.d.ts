@@ -23,6 +23,7 @@ type params = {
   clientSecret?: string,
   grantPath?: string,
   revokePath?: string,
+  interceptRequest: boolean,
   keychain: Keychain
 }
 

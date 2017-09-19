@@ -1,7 +1,7 @@
 import is from 'is'
 import { Keychain } from './Keychain'
 
-export class HttpRequestIntercept {
+export class HttpInterceptor {
   /**
    * @param {string} baseURL
    * @param {Keychain} keychain
@@ -20,7 +20,7 @@ export class HttpRequestIntercept {
 
   /**
    *
-   * @param {string} url
+   * @param {string|Request} url
    * @param {RequestInfo} config
    */
   async request (url, config) {
