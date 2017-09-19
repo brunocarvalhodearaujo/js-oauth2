@@ -34,42 +34,59 @@ choose your preferred method:
 
 ### Usage
 
+initialize library:
+
 ````js
+// Keychain.js
 import OAuth2, { AbstractKeychain } from 'js-oauth2'
 import cookie from 'js-cookie'
 
-// implementation of storage
+/**
+ * implementation of storage
+ * @typedef {{ access_token: string, refresh_token: string, expires_in:number, token_type: string }} Token
+ */
 class Keychain extends AbstractKeychain {
+  /**
+   * @param {Token} value
+   * @returns {Promise<void>}
+   */
   setToken (value) {
-    return new Promise((resolve) => resolve(cookie.set('token', value)))
+    return new Promise((resolve) => {
+      resolve(cookie.set('token', value))
+    })
   }
 
+  /**
+   * @returns {Promise<Token>}
+   */
   getToken () {
-    return new Promise((resolve) => resolve(cookie.getJSON('token')))
+    return new Promise((resolve) => {
+      resolve(cookie.getJSON('token'))
+    })
   }
 
+  /**
+   * @returns {Promise<void>}
+   */
   removeToken () {
-    return new Promise((resolve) => resolve(cookie.remove('token')))
+    return new Promise((resolve) => {
+      resolve(cookie.remove('token'))
+    })
   }
 }
-````
 
-#### API
-
-initialize library:
-
-```js
-const config = {
+const oauth = new OAuth2({
   baseUrl: 'http://api.example.com',
   clientId: 'test',
   clientSecret: 'test',
   grantPath: '/oauth/token',
   revokePath: '/oauth/revoke',
   keychain: new Keychain()
-}
+})
+````
 
-const oauth = new OAuth2(config)
-```
+#### API
+
 Check authentication status:
 
 ```js
@@ -143,9 +160,9 @@ auth.onError(onError)
 
 **NOTE**: An *event* `oauth:error` will be sent everytime a `onError` is emitted:
 
-* `{ status: 400, data: { error: 'invalid_request' }`
-* `{ status: 400, data: { error: 'invalid_grant' }`
-* `{ status: 401, data: { error: 'invalid_token' }`
+* `{ status: 400, data: { error: 'invalid_request' } }`
+* `{ status: 400, data: { error: 'invalid_grant' } }`
+* `{ status: 401, data: { error: 'invalid_token' } }`
 * `{ status: 401, headers: { 'www-authenticate': 'Bearer realm="example"' } }`
 
 
