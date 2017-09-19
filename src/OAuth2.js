@@ -89,6 +89,7 @@ export class OAuth2 {
     })
 
     const request = fetch(`${this.config.baseUrl}${this.config.grantPath}`, options)
+      .then(T => T.json())
     if (this.hasOwnProperty('keychain')) {
       request.then(response => this.keychain.setToken(response).then(() => response))
     }
@@ -123,6 +124,7 @@ export class OAuth2 {
     })
 
     const request = fetch(`${this.config.baseUrl}${this.config.grantPath}`, options)
+      .then(T => T.json())
     if (this.hasOwnProperty('keychain')) {
       request.then(response => this.keychain.setToken(response).then(() => response))
     }
@@ -155,6 +157,7 @@ export class OAuth2 {
     }, options, { method: 'POST', body: stringify(data) })
 
     const request = fetch(`${this.config.baseUrl}${this.config.grantPath}`, options)
+      .then(T => T.json())
     if (this.hasOwnProperty('keychain')) {
       request.then(response => this.keychain.removeToken(response).then(() => response))
     }
