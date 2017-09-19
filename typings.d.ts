@@ -24,7 +24,7 @@ type params = {
   grantPath?: string,
   revokePath?: string,
   interceptRequest: boolean,
-  keychain: Keychain
+  keychain?: Keychain
 }
 
 declare class OAuth2 {
