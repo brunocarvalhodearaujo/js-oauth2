@@ -24,10 +24,12 @@ export class HttpInterceptor {
    * @param {RequestInfo} config
    */
   async request (url, config) {
-    const authorizationHeader = await this.keychain.getAuthorizationHeader()
-    config.headers = config.headers || {}
-    if (url.includes(this.baseURL) && !config.headers.hasOwnProperty('Authorization') && authorizationHeader) {
-      config.headers.Authorization = authorizationHeader
+    if (url.includes(this.baseURL)) {
+      const authorizationHeader = await this.keychain.getAuthorizationHeader()
+      config['headers'] = config['headers'] || {}
+      if (!config.headers.hasOwnProperty('Authorization') && authorizationHeader) {
+        config.headers.Authorization = authorizationHeader
+      }
     }
     return [ url, config ]
   }
