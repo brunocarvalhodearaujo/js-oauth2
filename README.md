@@ -75,8 +75,8 @@ const oauth = new OAuth2({
   baseUrl: 'http://api.example.com',
   clientId: 'test',
   clientSecret: 'test',
-  grantPath: '/oauth/token',
-  revokePath: '/oauth/revoke',
+  grantPath: '/oauth/token', // optional
+  revokePath: '/oauth/revoke', // optional
   keychain: new Keychain()
 })
 ````
