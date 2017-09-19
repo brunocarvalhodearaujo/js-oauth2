@@ -10,10 +10,10 @@ type User = {
   password: string
 }
 
-declare class Keychain {
+declare interface Keychain {
   setToken (token: Token): Promise<void>
   getToken (): Promise<Token>
-  removeToken (): Promise<boolean>
+  removeToken (): Promise<void>
   getAuthorizationHeader (): Promise<string>
 }
 
@@ -38,4 +38,7 @@ declare class OAuth2 {
 }
 
 export default OAuth2
-export { Keychain as AbstractKeychain }
+export {
+  Token,
+  Keychain as AbstractKeychain
+}
