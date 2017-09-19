@@ -8,7 +8,7 @@ import { HttpInterceptor } from './HttpInterceptor'
 import fetchIntercept from 'fetch-intercept'
 
 /**
- * @type {{ baseUrl: string, clientId: string, clientSecret: string, grantPath: string, revokePath: string, interceptRequest: boolean, keychain: Keychain }}
+ * @type {{ baseUrl: string, clientId: string, clientSecret: string, grantPath: string, revokePath: string, interceptRequest: boolean, keychain?: Keychain }}
  */
 const DEFAULT = {
   baseUrl: null,
@@ -59,7 +59,9 @@ export class OAuth2 {
      * @type {config}
      */
     this.config = omit(config, 'keychain')
-    this.keychain = config.keychain
+    if (config.keychain) {
+      this.keychain = config.keychain
+    }
     if (config.interceptRequest) {
       this.emitter = new EventEmitter()
       this.interceptor = fetchIntercept.register(new HttpInterceptor(config.baseUrl, this.keychain, this.emitter))
@@ -86,8 +88,11 @@ export class OAuth2 {
       body: stringify(data)
     })
 
-    return fetch(`${this.config.baseUrl}${this.config.grantPath}`, options)
-      .then(response => this.keychain.setToken(response).then(() => response))
+    const request = fetch(`${this.config.baseUrl}${this.config.grantPath}`, options)
+    if (this.hasOwnProperty('keychain')) {
+      request.then(response => this.keychain.setToken(response).then(() => response))
+    }
+    return request
   }
 
   /**
@@ -117,8 +122,11 @@ export class OAuth2 {
       body: stringify(data)
     })
 
-    return fetch(`${this.config.baseUrl}${this.config.grantPath}`, options)
-      .then(response => this.keychain.setToken(response).then(() => response))
+    const request = fetch(`${this.config.baseUrl}${this.config.grantPath}`, options)
+    if (this.hasOwnProperty('keychain')) {
+      request.then(response => this.keychain.setToken(response).then(() => response))
+    }
+    return request
   }
 
   /**
@@ -146,8 +154,11 @@ export class OAuth2 {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     }, options, { method: 'POST', body: stringify(data) })
 
-    return fetch(`${this.config.baseUrl}${this.config.revokePath}`, options)
-      .then(response => this.keychain.removeToken().then(() => response))
+    const request = fetch(`${this.config.baseUrl}${this.config.grantPath}`, options)
+    if (this.hasOwnProperty('keychain')) {
+      request.then(response => this.keychain.removeToken(response).then(() => response))
+    }
+    return request
   }
 
   /**
