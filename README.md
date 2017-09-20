@@ -37,11 +37,11 @@ choose your preferred method:
 initialize library:
 
 ````js
-import OAuth2, { AbstractKeychain } from 'js-oauth2'
+import OAuth2, { Keychain } from 'js-oauth2'
 import cookie from 'js-cookie' // install separated
 
-// implementation of storage
-class Keychain extends AbstractKeychain {
+// implementation of Keychain
+class MyCustomKeychain extends Keychain {
   /**
    * @param {Token} value
    * @returns {Promise<void>}
@@ -77,7 +77,7 @@ const oauth = new OAuth2({
   clientSecret: 'test',
   grantPath: '/oauth/token', // optional
   revokePath: '/oauth/revoke', // optional
-  keychain: new Keychain()
+  keychain: new MyCustomKeychain() // optional
 })
 ````
 
