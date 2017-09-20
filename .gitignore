@@ -1,6 +1,7 @@
 # see http://help.github.com/ignore-files/ for more about ignoring files.
 
 # folders
+coverage
 node_modules
 .vscode
 .idea
