@@ -59,9 +59,11 @@ export class OAuth2 {
      * @type {config}
      */
     this.config = omit(config, 'keychain')
+
     if (config.keychain) {
       this.keychain = config.keychain
     }
+
     if (config.interceptRequest) {
       this.emitter = new EventEmitter()
       this.interceptor = fetchIntercept.register(new HttpInterceptor(config.baseUrl, this.keychain, this.emitter))
@@ -76,23 +78,33 @@ export class OAuth2 {
    * @returns {Promise<Token>} A response promise.
    */
   getAccessToken (data, options = {}) {
-    data = Object.assign({ client_id: this.config.clientId, grant_type: 'password' }, data)
+    data = {
+      client_id: this.config.clientId,
+      grant_type: 'password',
+      ...data
+    }
 
     if (!is.null(this.config.clientSecret)) {
       data.client_secret = this.config.clientSecret
     }
 
-    options = Object.assign(options, {
+    options = {
+      ...options,
       headers: { 'Authorization': undefined, 'Content-Type': 'application/x-www-form-urlencoded' },
       method: 'POST',
       body: stringify(data)
-    })
+    }
 
     const request = fetch(`${this.config.baseUrl}${this.config.grantPath}`, options)
       .then(T => T.json())
+
     if (this.hasOwnProperty('keychain')) {
-      request.then(response => this.keychain.setToken(response).then(() => response))
+      request.then(response =>
+        this.keychain.setToken(response)
+          .then(() => response)
+      )
     }
+
     return request
   }
 
@@ -107,27 +119,34 @@ export class OAuth2 {
   async getRefreshToken (data, options = {}) {
     const token = await this.keychain.getToken()
 
-    data = Object.assign({
+    data = {
       client_id: this.config.clientId,
       grant_type: 'refresh_token',
-      refresh_token: token.refresh_token
-    }, data)
+      refresh_token: token.refresh_token,
+      ...data
+    }
 
     if (!is.null(this.config.clientSecret)) {
       data.client_secret = this.config.clientSecret
     }
 
-    options = Object.assign(options, {
+    options = {
+      ...options,
       headers: { 'Authorization': undefined, 'Content-Type': 'application/x-www-form-urlencoded' },
       method: 'POST',
       body: stringify(data)
-    })
+    }
 
     const request = fetch(`${this.config.baseUrl}${this.config.grantPath}`, options)
       .then(T => T.json())
+
     if (this.hasOwnProperty('keychain')) {
-      request.then(response => this.keychain.setToken(response).then(() => response))
+      request.then(response =>
+        this.keychain.setToken(response)
+          .then(() => response)
+      )
     }
+
     return request
   }
 
@@ -142,24 +161,32 @@ export class OAuth2 {
   async revokeToken (data, options = {}) {
     const token = await this.keychain.getToken()
 
-    data = Object.assign({
+    data = {
       client_id: this.config.clientId,
       token: token.refresh_token || token.access_token,
-      token_type_hint: token.refresh_token ? 'refresh_token' : 'access_token'
-    }, data)
+      token_type_hint: token.refresh_token ? 'refresh_token' : 'access_token',
+      ...data
+    }
 
     if (this.config.clientSecret !== null) {
       data.client_secret = this.config.clientSecret
     }
 
-    options = Object.assign({
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    }, options, { method: 'POST', body: stringify(data) })
+    options = {
+      ...options,
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      method: 'POST',
+      body: stringify(data)
+    }
 
     const request = fetch(`${this.config.baseUrl}${this.config.grantPath}`, options)
       .then(T => T.json())
+
     if (this.hasOwnProperty('keychain')) {
-      request.then(response => this.keychain.removeToken(response).then(() => response))
+      request.then(response =>
+        this.keychain.removeToken(response)
+          .then(() => response)
+      )
     }
     return request
   }

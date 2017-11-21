@@ -34,7 +34,8 @@ export class Keychain {
       if (!token || !token.token_type || !token.access_token) {
         return undefined
       }
-      return `${token.token_type.charAt(0).toUpperCase() + token.token_type.substr(1)} ${token.access_token}`
+
+      return `${token.token_type.charAt(0).toUpperCase()}${token.token_type.substr(1)} ${token.access_token}`
     })
   }
 }
