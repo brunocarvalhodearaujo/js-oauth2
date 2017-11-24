@@ -47,7 +47,7 @@ export class HttpInterceptor {
     if (response.url.includes(this.baseURL) && (response.status === 400 || response.status === 401)) {
       const data = await response.clone().json()
 
-      if ((data.error === 'invalid_request' || data.error === 'invalid_grant')) {
+      if (data.error === 'invalid_request' || data.error === 'invalid_grant') {
         await this.keychain.removeToken()
 
         this.emitter.emit('oauth:error', response)

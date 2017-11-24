@@ -32,7 +32,7 @@ export class OAuth2 {
       throw new Error('Invalid argument: `config` must be an `Object`.')
     }
 
-    const config = Object.assign(DEFAULT, params)
+    const config = { ...DEFAULT, ...params }
 
     Object.keys(DEFAULT).forEach(key => {
       if (!config[key]) {
@@ -90,7 +90,10 @@ export class OAuth2 {
 
     options = {
       ...options,
-      headers: { 'Authorization': undefined, 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: {
+        'Authorization': undefined,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
       method: 'POST',
       body: stringify(data)
     }
@@ -200,7 +203,7 @@ export class OAuth2 {
   }
 
   /**
-   * @param {function} callback
+   * @param {(error:Error, data: {}) => void} callback
    */
   onError (callback) {
     if (this.config.interceptRequest) {
