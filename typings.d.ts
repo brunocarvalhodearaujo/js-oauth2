@@ -1,23 +1,23 @@
-type Token = {
+export interface Token {
   access_token: string,
   token_type: string,
   expires_in: number,
   refresh_token: string
 }
 
-type User = {
+export interface User {
   username: string,
   password: string
 }
 
-declare class Keychain {
+export interface Keychain {
   setToken (token: Token): Promise<void>
   getToken (): Promise<Token>
   removeToken (): Promise<void>
   getAuthorizationHeader (): Promise<string>
 }
 
-type params = {
+export interface params {
   baseUrl: string,
   clientId: string,
   clientSecret?: string,
@@ -27,7 +27,7 @@ type params = {
   keychain?: Keychain
 }
 
-declare class OAuth2 {
+export default interface OAuth2 {
   constructor (params: params)
   isAuthenticated (): Promise<boolean>
   getAccessToken (user: User, options?: RequestInfo): Promise<Token>
@@ -36,6 +36,3 @@ declare class OAuth2 {
   onError (callback: Function): void
   stopHttpIntercept (): void
 }
-
-export default OAuth2
-export { Token, Keychain }
