@@ -1,3 +1,5 @@
+import { EventEmitter } from 'events'
+
 export interface Token {
   access_token: string,
   token_type: string,
@@ -23,16 +25,17 @@ export interface params {
   clientSecret?: string,
   grantPath?: string,
   revokePath?: string,
-  interceptRequest: boolean,
-  keychain?: Keychain
+  keychain: Keychain
 }
 
-export default interface OAuth2 {
+export default interface AuthenticationService {
+  events: EventEmitter
+
   constructor (params: params)
   isAuthenticated (): Promise<boolean>
   getAccessToken (user: User, options?: RequestInfo): Promise<Token>
   getRefreshToken (user: User, options?: RequestInfo): Promise<Token>
   revokeToken (): Promise<boolean>
-  onError (callback: Function): void
-  stopHttpIntercept (): void
 }
+
+export declare function httpRequestInterceptor(service: AuthenticationService): void
