@@ -1,2 +1,3 @@
-export { OAuth2 as default } from './OAuth2'
-export { Keychain } from './Keychain'
+export { AuthenticationService } from './AuthenticationService'
+export { Keychain as AbstractKeychain } from './Keychain'
+export { default as httpRequestInterceptor } from './HttpRequestInterceptor'

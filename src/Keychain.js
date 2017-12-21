@@ -4,7 +4,7 @@
 export class Keychain {
   /**
    * @param {Token} value
-   * @returns {Promise<void>}
+   * @returns {Promise<Token>}
    */
   setToken (value) {
     throw new Error('`Keychain` model does not implement `setToken()`')

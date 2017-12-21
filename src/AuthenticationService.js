@@ -1,14 +1,10 @@
-/* global fetch */
-import is from 'is'
 import omit from 'lodash.omit'
-import { stringify } from 'querystring'
 import { Keychain } from './Keychain'
+import { stringify } from 'query-string'
 import { EventEmitter } from 'events'
-import { HttpInterceptor } from './HttpInterceptor'
-import fetchIntercept from 'fetch-intercept'
 
 /**
- * @type {{ baseUrl: string, clientId: string, clientSecret: string, grantPath: string, revokePath: string, interceptRequest: boolean, keychain?: Keychain }}
+ * @type {{ debug?: boolean, baseUrl: string, clientId: string, clientSecret: string, grantPath: string, revokePath: string, keychain?: Keychain }}
  */
 const DEFAULT = {
   baseUrl: null,
@@ -16,42 +12,44 @@ const DEFAULT = {
   clientSecret: null,
   grantPath: '/oauth2/token',
   revokePath: '/oauth2/revoke',
-  interceptRequest: true,
   keychain: new Keychain()
 }
 
 /**
  * @typedef {{ access_token: string, refresh_token: string, expires_in:number, token_type: string }} Token
  */
-export class OAuth2 {
+export class AuthenticationService {
   /**
-   * @param {DEFAULT} params
+   * @param {DEFAULT} settings
    */
-  constructor (params = {}) {
-    if (!(params instanceof Object)) {
+  constructor (settings = {}) {
+    if (!(settings instanceof Object)) {
       throw new Error('Invalid argument: `config` must be an `Object`.')
     }
 
-    const config = { ...DEFAULT, ...params }
+    const config = {
+      ...DEFAULT,
+      ...settings
+    }
 
     Object.keys(DEFAULT).forEach(key => {
-      if (!config[key]) {
+      if (!config[ key ]) {
         throw new Error(`Missing parameter: ${key}.`)
       }
     })
 
     // Remove `baseUrl` trailing slash.
-    if (is.equal(config.baseUrl.substr(-1), '/')) {
+    if (config.baseUrl.substr(-1) === '/') {
       config.baseUrl = config.baseUrl.slice(0, -1)
     }
 
     // Add `grantPath` facing slash.
-    if (!is.equal(config.grantPath[0], '/')) {
+    if (config.grantPath[0] !== '/') {
       config.grantPath = `/${config.grantPath}`
     }
 
     // Add `revokePath` facing slash.
-    if (!is.equal(config.revokePath[0], '/')) {
+    if (config.revokePath[0] !== '/') {
       config.revokePath = `/${config.revokePath}`
     }
 
@@ -59,15 +57,20 @@ export class OAuth2 {
      * @type {config}
      */
     this.config = omit(config, 'keychain')
+    /**
+     * @type {Keychain}
+     */
+    this.keychain = config.keychain
+    /**
+     * @type {EventEmitter}
+     */
+    this.events = new EventEmitter()
 
-    if (config.keychain) {
-      this.keychain = config.keychain
-    }
-
-    if (config.interceptRequest) {
-      this.emitter = new EventEmitter()
-      this.interceptor = fetchIntercept.register(new HttpInterceptor(config.baseUrl, this.keychain, this.emitter))
-    }
+    // bind class methods
+    this.getAccessToken = this.getAccessToken.bind(this)
+    this.getRefreshToken = this.getRefreshToken.bind(this)
+    this.isAuthenticated = this.isAuthenticated.bind(this)
+    this.revokeToken = this.revokeToken.bind(this)
   }
 
   /**
@@ -84,7 +87,7 @@ export class OAuth2 {
       ...data
     }
 
-    if (!is.null(this.config.clientSecret)) {
+    if (this.config.clientSecret !== null) {
       data.client_secret = this.config.clientSecret
     }
 
@@ -98,17 +101,9 @@ export class OAuth2 {
       body: stringify(data)
     }
 
-    const request = fetch(`${this.config.baseUrl}${this.config.grantPath}`, options)
+    return fetch(`${this.config.baseUrl}${this.config.grantPath}`, options)
       .then(T => T.json())
-
-    if (this.hasOwnProperty('keychain')) {
-      request.then(response =>
-        this.keychain.setToken(response)
-          .then(() => response)
-      )
-    }
-
-    return request
+      .then(this.keychain.setToken)
   }
 
   /**
@@ -129,28 +124,23 @@ export class OAuth2 {
       ...data
     }
 
-    if (!is.null(this.config.clientSecret)) {
+    if (this.config.clientSecret !== null) {
       data.client_secret = this.config.clientSecret
     }
 
     options = {
       ...options,
-      headers: { 'Authorization': undefined, 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: {
+        'Authorization': undefined,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
       method: 'POST',
       body: stringify(data)
     }
 
-    const request = fetch(`${this.config.baseUrl}${this.config.grantPath}`, options)
+    return fetch(`${this.config.baseUrl}${this.config.grantPath}`, options)
       .then(T => T.json())
-
-    if (this.hasOwnProperty('keychain')) {
-      request.then(response =>
-        this.keychain.setToken(response)
-          .then(() => response)
-      )
-    }
-
-    return request
+      .then(this.keychain.setToken)
   }
 
   /**
@@ -177,21 +167,16 @@ export class OAuth2 {
 
     options = {
       ...options,
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
       method: 'POST',
       body: stringify(data)
     }
 
-    const request = fetch(`${this.config.baseUrl}${this.config.grantPath}`, options)
+    return fetch(`${this.config.baseUrl}${this.config.grantPath}`, options)
       .then(T => T.json())
-
-    if (this.hasOwnProperty('keychain')) {
-      request.then(response =>
-        this.keychain.removeToken(response)
-          .then(() => response)
-      )
-    }
-    return request
+      .then(this.keychain.removeToken)
   }
 
   /**
@@ -200,20 +185,5 @@ export class OAuth2 {
   isAuthenticated () {
     return this.keychain.getToken()
       .then(token => Boolean(typeof token === 'object' && token['access_token']))
-  }
-
-  /**
-   * @param {(error:Error, data: {}) => void} callback
-   */
-  onError (callback) {
-    if (this.config.interceptRequest) {
-      this.emitter.on('oauth:error', callback)
-    }
-  }
-
-  stopHttpIntercept () {
-    if (this.config.interceptRequest) {
-      this.interceptor.unregister()
-    }
   }
 }
