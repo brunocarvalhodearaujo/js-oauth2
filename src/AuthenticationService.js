@@ -174,7 +174,7 @@ export class AuthenticationService {
       body: stringify(data)
     }
 
-    return fetch(`${this.config.baseUrl}${this.config.grantPath}`, options)
+    return fetch(`${this.config.baseUrl}${this.config.revokePath}`, options)
       .then(T => T.json())
       .then(this.keychain.removeToken)
   }
