@@ -1,3 +1,3 @@
 export { AuthenticationService } from './AuthenticationService'
 export { Keychain as AbstractKeychain } from './Keychain'
-export { default as httpRequestInterceptor } from './HttpRequestInterceptor'
+export { default as httpRequestInterceptor } from './httpRequestInterceptor'

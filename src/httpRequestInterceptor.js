@@ -72,5 +72,6 @@ class HttpRequestInterceptor {
   }
 }
 
-export default (service) => fetchIntercept
-  .register(new HttpRequestInterceptor(service))
+export default (service) => {
+  return fetchIntercept.register(new HttpRequestInterceptor(service))
+}
