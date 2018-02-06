@@ -37,11 +37,10 @@ choose your preferred method:
 initialize library:
 
 ````js
-import OAuth2, { Keychain } from 'js-oauth2'
-import cookie from 'js-cookie' // install separated
+import { AuthenticationService, AbstractKeychain, httpRequestInterceptor } from 'js-oauth2'
+import cookie from 'js-cookie'
 
-// implementation of Keychain
-class MyCustomKeychain extends Keychain {
+class Keychain extends AbstractKeychain {
   /**
    * @param {Token} value
    * @returns {Promise<void>}
@@ -57,7 +56,7 @@ class MyCustomKeychain extends Keychain {
    */
   getToken () {
     return new Promise((resolve) => {
-      resolve(cookie.getJSON('token'))
+      resolve(cookie.getJSON('token') || {})
     })
   }
 
@@ -71,14 +70,14 @@ class MyCustomKeychain extends Keychain {
   }
 }
 
-const oauth = new OAuth2({
-  baseUrl: 'http://api.example.com',
-  clientId: 'test',
-  clientSecret: 'test',
-  grantPath: '/oauth/token', // optional
-  revokePath: '/oauth/revoke', // optional
-  keychain: new MyCustomKeychain() // optional
+const oauth = new AuthenticationService({
+  baseUrl: '/api',
+  clientId: 'b921b25ebe3ee70c6b1',
+  clientSecret: '8f4d45d9a363d922b2eb7',
+  keychain: new Keychain()
 })
+
+httpRequestInterceptor(oauth) // only if you need http request interception
 ````
 
 #### API
