@@ -32,7 +32,7 @@ export class AuthenticationService {
       ...settings
     }
 
-    Object.keys(DEFAULT).forEach(key => {
+    Object.keys(omit(DEFAULT, 'clientSecret')).forEach(key => {
       if (!config[ key ]) {
         throw new Error(`Missing parameter: ${key}.`)
       }
