@@ -6,23 +6,17 @@ export class Keychain {
    * @param {Token} value
    * @returns {Promise<Token>}
    */
-  setToken (value) {
-    throw new Error('`Keychain` model does not implement `setToken()`')
-  }
+  setToken (value) {}
 
   /**
    * @returns {Promise<Token>}
    */
-  getToken () {
-    throw new Error('`Keychain` model does not implement `getToken()`')
-  }
+  getToken () {}
 
   /**
    * @returns {Promise<void>}
    */
-  removeToken () {
-    throw new Error('`Keychain` model does not implement `removeToken()`')
-  }
+  removeToken () {}
 
   /**
    * generate authorization header using token in storage
