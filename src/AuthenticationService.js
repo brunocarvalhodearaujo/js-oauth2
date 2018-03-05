@@ -32,7 +32,7 @@ export class AuthenticationService {
       ...settings
     }
 
-    Object.keys(omit(DEFAULT, 'clientSecret')).forEach(key => {
+    Object.keys(omit(DEFAULT, 'clientSecret', 'keychain')).forEach(key => {
       if (!config[ key ]) {
         throw new Error(`Missing parameter: ${key}.`)
       }
@@ -184,7 +184,8 @@ export class AuthenticationService {
    * @returns {Promise<boolean>}
    */
   isAuthenticated () {
-    return this.keychain.getToken()
-      .then(token => Boolean(typeof token === 'object' && token['access_token']))
+    return this.keychain.getToken().then(token =>
+      Boolean(typeof token === 'object' && token['access_token'])
+    )
   }
 }
