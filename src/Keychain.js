@@ -6,17 +6,23 @@ export class Keychain {
    * @param {Token} value
    * @returns {Promise<Token>}
    */
-  setToken (value) {}
+  setToken (value) {
+    throw new Error('Method not implemented')
+  }
 
   /**
    * @returns {Promise<Token>}
    */
-  getToken () {}
+  getToken () {
+    throw new Error('Method not implemented')
+  }
 
   /**
    * @returns {Promise<void>}
    */
-  removeToken () {}
+  removeToken () {
+    throw new Error('Method not implemented')
+  }
 
   /**
    * generate authorization header using token in storage
@@ -24,12 +30,13 @@ export class Keychain {
    * @returns {Promise<string>}
    */
   getAuthorizationHeader () {
-    return this.getToken().then(token => {
-      if (!token || !token.token_type || !token.access_token) {
-        return undefined
-      }
+    return this.getToken()
+      .then(token => {
+        if (!token || !token.token_type || !token.access_token) {
+          return undefined
+        }
 
-      return `${token.token_type.charAt(0).toUpperCase()}${token.token_type.substr(1)} ${token.access_token}`
-    })
+        return `${token.token_type.charAt(0).toUpperCase()}${token.token_type.substr(1)} ${token.access_token}`
+      })
   }
 }

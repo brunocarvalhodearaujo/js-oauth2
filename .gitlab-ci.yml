@@ -1,0 +1,9 @@
+test:
+  stage: test
+  image: node:10.9.0-alpine
+  before_script:
+    - npm ci
+  script:
+    - npm test
+  only:
+    - tags

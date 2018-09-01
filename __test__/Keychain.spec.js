@@ -6,16 +6,16 @@ describe('#Keychain', () => {
 
   it('force implements `setToken`', () => {
     expect(keychain.setToken)
-      .toThrow('`Keychain` model does not implement `setToken()`')
+      .toThrow('Method not implemented')
   })
 
   it('force implements `getToken`', () => {
     expect(keychain.getToken)
-      .toThrow('`Keychain` model does not implement `getToken()`')
+      .toThrow('Method not implemented')
   })
 
   it('force implements `removeToken`', () => {
     expect(keychain.removeToken)
-      .toThrow('`Keychain` model does not implement `removeToken()`')
+      .toThrow('Method not implemented')
   })
 })
