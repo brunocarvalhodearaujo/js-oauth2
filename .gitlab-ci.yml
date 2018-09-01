@@ -17,7 +17,7 @@ npm:
   image: node:10.9.0-alpine
   before_script:
     - npm ci
-    - echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
+    - echo -e "//registry.npmjs.org/:_authToken=$NPM_TOKEN\nuser=$NPM_USER" > ~/.npmrc
   script:
     - npm publish
   only:
