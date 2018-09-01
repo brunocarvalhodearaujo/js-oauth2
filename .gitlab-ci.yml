@@ -1,3 +1,9 @@
+stages:
+  - test
+  - build
+  - deploy
+  - pages
+
 test:
   stage: test
   image: node:10.9.0-alpine
@@ -5,5 +11,16 @@ test:
     - npm ci
   script:
     - npm test
+  only:
+    - tags
+
+deploy:
+  stage: deploy
+  image: node:10.9.0-alpine
+  before_script:
+    - echo "//<npm-registry>:8080/:_authToken=$NPM_AUTH_TOKEN" > ~/.npmrc
+    - npm ci
+  script:
+    - npm publish
   only:
     - tags
