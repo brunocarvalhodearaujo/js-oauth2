@@ -18,7 +18,7 @@ deploy:
   stage: deploy
   image: node:10.9.0-alpine
   before_script:
-    - echo "//<npm-registry>:8080/:_authToken=$NPM_AUTH_TOKEN" > ~/.npmrc
+    - echo "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}" > ~/.npmrc
     - npm ci
   script:
     - npm publish
