@@ -18,6 +18,8 @@ deploy:
   stage: deploy
   image: node:10.9.0-alpine
   before_script:
+    - npm set init.author.name "$NPM_AUTH_USERNAME"
+    - npm set init.author.email "$NPM_AUTH_EMAIL"
     - echo "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}" > ~/.npmrc
     - npm ci
   script:
