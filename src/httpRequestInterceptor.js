@@ -1,6 +1,9 @@
 import { AuthenticationService } from './AuthenticationService'
 import fetchIntercept from 'fetch-intercept'
 
+/**
+ * intercept and manipulate requests
+ */
 class HttpRequestInterceptor {
   /**
    * @param {AuthenticationService} service
@@ -82,6 +85,12 @@ class HttpRequestInterceptor {
   }
 }
 
-export default (service) => {
+/**
+ * @param {AuthenticationService} service
+ * @returns {{ unregister: () => void }}
+ */
+const interceptor = service => {
   return fetchIntercept.register(new HttpRequestInterceptor(service))
 }
+
+export default interceptor

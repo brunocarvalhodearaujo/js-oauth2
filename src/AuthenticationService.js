@@ -1,10 +1,22 @@
-import omit from 'lodash.omit'
 import { Keychain } from './Keychain'
 import { stringify } from 'query-string'
 import { EventEmitter } from 'events'
+import omit from 'lodash.omit'
 
 /**
- * @type {{ debug?: boolean, baseUrl: string, clientId: string, clientSecret: string, grantPath: string, revokePath: string, keychain?: Keychain }}
+ * @private
+ * @typedef Options
+ * @property {boolean} [debug]
+ * @property {string} baseUrl
+ * @property {string} clientId
+ * @property {string} clientSecret
+ * @property {string} grantPath
+ * @property {string} revokePath
+ * @property {Keychain} keychain
+ */
+
+/**
+ * @type {Options}
  */
 const DEFAULT = {
   baseUrl: null,
@@ -27,15 +39,10 @@ export class AuthenticationService {
       throw new Error('Invalid argument: `config` must be an `Object`.')
     }
 
-    const config = {
-      ...DEFAULT,
-      ...settings
-    }
+    const config = Object.assign(DEFAULT, settings)
 
     Object.keys(omit(DEFAULT, 'clientSecret', 'keychain')).forEach(key => {
-      if (!config[ key ]) {
-        throw new Error(`Missing parameter: ${key}.`)
-      }
+      if (!config[key]) throw new Error(`Missing parameter: ${key}.`)
     })
 
     // Remove `baseUrl` trailing slash.
@@ -115,32 +122,36 @@ export class AuthenticationService {
    * @return {Promise<Token>} A response promise.
    */
   async getRefreshToken (data, options = {}) {
-    const token = await this.keychain.getToken()
+    try {
+      const token = await this.keychain.getToken()
 
-    data = {
-      client_id: this.config.clientId,
-      grant_type: 'refresh_token',
-      refresh_token: token.refresh_token,
-      ...data
+      data = {
+        client_id: this.config.clientId,
+        grant_type: 'refresh_token',
+        refresh_token: token.refresh_token,
+        ...data
+      }
+
+      if (this.config.clientSecret !== null) {
+        data.client_secret = this.config.clientSecret
+      }
+
+      options = {
+        ...options,
+        headers: {
+          'Authorization': undefined,
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        method: 'POST',
+        body: stringify(data)
+      }
+
+      return fetch(`${this.config.baseUrl}${this.config.grantPath}`, options)
+        .then(T => T.json())
+        .then(this.keychain.setToken)
+    } catch (err) {
+      return Promise.reject(err)
     }
-
-    if (this.config.clientSecret !== null) {
-      data.client_secret = this.config.clientSecret
-    }
-
-    options = {
-      ...options,
-      headers: {
-        'Authorization': undefined,
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      method: 'POST',
-      body: stringify(data)
-    }
-
-    return fetch(`${this.config.baseUrl}${this.config.grantPath}`, options)
-      .then(T => T.json())
-      .then(this.keychain.setToken)
   }
 
   /**
@@ -152,40 +163,43 @@ export class AuthenticationService {
    * @return {Promise<boolean>} A response promise.
    */
   async revokeToken (data, options = {}) {
-    const token = await this.keychain.getToken()
+    try {
+      const token = await this.keychain.getToken()
 
-    data = {
-      client_id: this.config.clientId,
-      token: token.refresh_token || token.access_token,
-      token_type_hint: token.refresh_token ? 'refresh_token' : 'access_token',
-      ...data
+      data = {
+        client_id: this.config.clientId,
+        token: token.refresh_token || token.access_token,
+        token_type_hint: token.refresh_token ? 'refresh_token' : 'access_token',
+        ...data
+      }
+
+      if (this.config.clientSecret !== null) {
+        data.client_secret = this.config.clientSecret
+      }
+
+      options = {
+        ...options,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        method: 'POST',
+        body: stringify(data)
+      }
+
+      return fetch(`${this.config.baseUrl}${this.config.revokePath}`, options)
+        .then(T => T.json())
+        .then(this.keychain.removeToken)
+        .catch(this.keychain.removeToken)
+    } catch (err) {
+      return Promise.reject(err)
     }
-
-    if (this.config.clientSecret !== null) {
-      data.client_secret = this.config.clientSecret
-    }
-
-    options = {
-      ...options,
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      method: 'POST',
-      body: stringify(data)
-    }
-
-    return fetch(`${this.config.baseUrl}${this.config.revokePath}`, options)
-      .then(T => T.json())
-      .then(this.keychain.removeToken)
-      .catch(this.keychain.removeToken)
   }
 
   /**
    * @returns {Promise<boolean>}
    */
   isAuthenticated () {
-    return this.keychain.getToken().then(token =>
-      Boolean(typeof token === 'object' && token['access_token'])
-    )
+    return this.keychain.getToken()
+      .then(token => Boolean(typeof token === 'object' && token['access_token']))
   }
 }

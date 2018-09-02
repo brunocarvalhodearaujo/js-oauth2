@@ -7,21 +7,21 @@ export class Keychain {
    * @returns {Promise<Token>}
    */
   setToken (value) {
-    throw new Error('Method not implemented')
+    return Promise.reject(new Error('Method not implemented'))
   }
 
   /**
    * @returns {Promise<Token>}
    */
   getToken () {
-    throw new Error('Method not implemented')
+    return Promise.reject(new Error('Method not implemented'))
   }
 
   /**
    * @returns {Promise<void>}
    */
   removeToken () {
-    throw new Error('Method not implemented')
+    return Promise.reject(new Error('Method not implemented'))
   }
 
   /**

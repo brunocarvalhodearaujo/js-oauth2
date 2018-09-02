@@ -30,7 +30,6 @@ export interface params {
 
 export default interface AuthenticationService {
   events: EventEmitter
-
   constructor (params: params)
   isAuthenticated (): Promise<boolean>
   getAccessToken (user: User, options?: RequestInfo): Promise<Token>
