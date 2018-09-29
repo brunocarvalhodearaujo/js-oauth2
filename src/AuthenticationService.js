@@ -109,7 +109,13 @@ export class AuthenticationService {
     }
 
     return fetch(`${this.config.baseUrl}${this.config.grantPath}`, options)
-      .then(T => T.json())
+      .then(response => {
+        if (![ 200, 201 ].includes(response.status)) {
+          return Promise.reject(response)
+        }
+
+        return response.json()
+      })
       .then(this.keychain.setToken)
   }
 
