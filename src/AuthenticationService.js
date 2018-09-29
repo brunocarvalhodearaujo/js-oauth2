@@ -110,7 +110,7 @@ export class AuthenticationService {
 
     return fetch(`${this.config.baseUrl}${this.config.grantPath}`, options)
       .then(response => {
-        if (response.status === 200) {
+        if (response.status !== 200) {
           return Promise.reject(response)
         }
 
@@ -154,7 +154,7 @@ export class AuthenticationService {
 
       return fetch(`${this.config.baseUrl}${this.config.grantPath}`, options)
         .then(response => {
-          if (response.status === 200) {
+          if (response.status !== 200) {
             return Promise.reject(response)
           }
 
