@@ -33,7 +33,7 @@
     "events": "^3.0.0",
     "fetch-intercept": "^2.3.0",
     "lodash.omit": "^4.5.0",
-    "query-string": "^6.1.0"
+    "querystring": "^0.2.0"
   },
   "jest": {
     "verbose": true,

@@ -1,5 +1,5 @@
 import { Keychain } from './Keychain'
-import { stringify } from 'query-string'
+import { stringify } from 'querystring'
 import { EventEmitter } from 'events'
 import omit from 'lodash.omit'
 
