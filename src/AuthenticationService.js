@@ -110,7 +110,7 @@ export class AuthenticationService {
 
     return fetch(`${this.config.baseUrl}${this.config.grantPath}`, options)
       .then(response => {
-        if (![ 200, 201 ].includes(response.status)) {
+        if (response.status === 200) {
           return Promise.reject(response)
         }
 
@@ -153,7 +153,13 @@ export class AuthenticationService {
       }
 
       return fetch(`${this.config.baseUrl}${this.config.grantPath}`, options)
-        .then(T => T.json())
+        .then(response => {
+          if (response.status === 200) {
+            return Promise.reject(response)
+          }
+
+          return response.json()
+        })
         .then(this.keychain.setToken)
     } catch (err) {
       return Promise.reject(err)
