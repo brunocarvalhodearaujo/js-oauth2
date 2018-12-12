@@ -12,7 +12,7 @@ export interface User {
   password: string
 }
 
-export interface Keychain {
+export interface AbstractKeychain {
   setToken (token: Token): Promise<void>
   getToken (): Promise<Token>
   removeToken (): Promise<void>
@@ -25,10 +25,10 @@ export interface params {
   clientSecret?: string,
   grantPath?: string,
   revokePath?: string,
-  keychain: Keychain
+  keychain: AbstractKeychain
 }
 
-export default interface AuthenticationService {
+export interface AuthenticationService {
   events: EventEmitter
   constructor (params: params)
   isAuthenticated (): Promise<boolean>
