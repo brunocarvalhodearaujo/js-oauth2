@@ -17,6 +17,15 @@ import omit from 'lodash.omit'
  */
 
 /**
+ * @private
+ * @typedef Token
+ * @property {string} access_token
+ * @property {string} refresh_token
+ * @property {number} expires_in
+ * @property {string} token_type
+ */
+
+/**
  * @type {Options}
  */
 const DEFAULT = {
@@ -28,9 +37,6 @@ const DEFAULT = {
   keychain: new Keychain()
 }
 
-/**
- * @typedef {{ access_token: string, refresh_token: string, expires_in:number, token_type: string }} Token
- */
 export class AuthenticationService {
   /**
    * @param {DEFAULT} settings

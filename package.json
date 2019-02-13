@@ -41,7 +41,7 @@
       "text-summary"
     ],
     "collectCoverageFrom": [
-      "src/**/*.{js,jsx}",
+      "src/**/*.js",
       "!<rootDir>/node_modules/"
     ],
     "coverageThreshold": {
