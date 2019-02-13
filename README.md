@@ -7,6 +7,8 @@ js-oauth2
 [![devDependency Status](https://david-dm.org/brunocarvalhodearaujo/js-oauth2/dev-status.svg?style=flat-square)](https://david-dm.org/brunocarvalhodearaujo/js-oauth2#info=devDependencies)
 [![npm](https://img.shields.io/npm/dt/js-oauth2.svg)](https://www.npmjs.com/package/js-oauth2)
 [![coverage report](https://gitlab.com/brunocarvalho/js-oauth2/badges/2.x/coverage.svg)](https://gitlab.com/brunocarvalho/js-oauth2/commits/2.x)
+[![Known Vulnerabilities](https://snyk.io/test/github/sffc/js-oauth2/badge.svg)](https://snyk.io/test/github/sffc/js-oauth2)
+[![npm version](http://img.shields.io/npm/v/js-oauth2.svg?style=flat)](https://npmjs.org/package/js-oauth2 "View this project on npm")
 
 This library is a port of angular-oauth2 to vanilla JS and fetch. Currently, this library only uses the password
 credential grant, i.e, using a combination (username, password), we'll request an access
