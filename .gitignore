@@ -5,7 +5,7 @@ coverage
 node_modules
 .vscode
 .idea
-dist
+lib
 
 # files
 *.DS_Store
