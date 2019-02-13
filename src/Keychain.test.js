@@ -1,4 +1,4 @@
-import { Keychain } from '../src/Keychain'
+import { Keychain } from './Keychain'
 
 describe('Keychain', () => {
   /**

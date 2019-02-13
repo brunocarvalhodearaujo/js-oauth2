@@ -89,8 +89,7 @@ class HttpRequestInterceptor {
  * @param {AuthenticationService} service
  * @returns {{ unregister: () => void }}
  */
-const interceptor = service => {
-  return fetchIntercept.register(new HttpRequestInterceptor(service))
-}
+const interceptor = service => fetchIntercept
+  .register(new HttpRequestInterceptor(service))
 
 export default interceptor

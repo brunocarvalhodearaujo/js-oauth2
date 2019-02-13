@@ -1,5 +1,9 @@
 /**
- * @typedef {{ access_token: string, refresh_token: string, expires_in:number, token_type: string }} Token
+ * @typedef Token
+ * @property {string} access_token
+ * @property {string} refresh_token
+ * @property {number} expires_in
+ * @property {string} token_type
  */
 export class Keychain {
   /**
@@ -7,27 +11,27 @@ export class Keychain {
    * @returns {Promise<Token>}
    */
   setToken (value) {
-    return Promise.reject(new Error('Not implemented'))
+    return Promise.reject(new Error('Method not implemented'))
   }
 
   /**
    * @returns {Promise<Token>}
    */
   getToken () {
-    return Promise.reject(new Error('Not implemented'))
+    return Promise.reject(new Error('Method not implemented'))
   }
 
   /**
    * @returns {Promise<void>}
    */
   removeToken () {
-    return Promise.reject(new Error('Not implemented'))
+    return Promise.reject(new Error('Method not implemented'))
   }
 
   /**
    * generate authorization header using token in storage
    *
-   * @returns {Promise<string>}
+   * @returns {Promise<string|void>}
    */
   getAuthorizationHeader () {
     return this.getToken()

@@ -1,3 +1,4 @@
+import 'fetch-everywhere'
 import { Keychain } from './Keychain'
 import { stringify } from 'querystring'
 import { EventEmitter } from 'events'
