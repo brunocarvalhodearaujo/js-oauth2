@@ -1,24 +1,27 @@
-import { Keychain } from './Keychain'
+/**
+ * Copyright (c) 2020-present, Bruno Carvalho de Araujo.
+ * All rights reserved.
+ *
+ * This source code is licensed under the license found in the LICENSE file in
+ * the root directory of this source tree.
+ */
+
+import { Keychain, Token } from './Keychain'
 import { stringify } from 'querystring'
 import { EventEmitter } from 'events'
 import omit from 'lodash.omit'
 
-/**
- * @private
- * @typedef Options
- * @property {boolean} [debug]
- * @property {string} baseUrl
- * @property {string} clientId
- * @property {string} clientSecret
- * @property {string} grantPath
- * @property {string} revokePath
- * @property {Keychain} keychain
- */
+type Options = {
+  debug: boolean,
+  baseUrl: string,
+  clientId: string,
+  clientSecret: string,
+  grantPath: string,
+  revokePath: string,
+  keychain: Keychain,
+}
 
-/**
- * @type {Options}
- */
-const DEFAULT = {
+const DEFAULT: Partial<Options> = {
   baseUrl: null,
   clientId: null,
   clientSecret: null,
@@ -27,14 +30,12 @@ const DEFAULT = {
   keychain: new Keychain()
 }
 
-/**
- * @typedef {{ access_token: string, refresh_token: string, expires_in:number, token_type: string }} Token
- */
 export class AuthenticationService {
-  /**
-   * @param {DEFAULT} settings
-   */
-  constructor (settings = {}) {
+  public config: Options
+  public keychain: Keychain
+  public events: EventEmitter = new EventEmitter()
+
+  constructor (settings: Partial<Options> = {}) {
     if (!(settings instanceof Object)) {
       throw new Error('Invalid argument: `config` must be an `Object`.')
     }
@@ -60,34 +61,18 @@ export class AuthenticationService {
       config.revokePath = `/${config.revokePath}`
     }
 
-    /**
-     * @type {config}
-     */
-    this.config = omit(config, 'keychain')
-    /**
-     * @type {Keychain}
-     */
+    this.config = omit(config, 'keychain') as Options
     this.keychain = config.keychain
-    /**
-     * @type {EventEmitter}
-     */
-    this.events = new EventEmitter()
-
-    // bind class methods
-    this.getAccessToken = this.getAccessToken.bind(this)
-    this.getRefreshToken = this.getRefreshToken.bind(this)
-    this.isAuthenticated = this.isAuthenticated.bind(this)
-    this.revokeToken = this.revokeToken.bind(this)
   }
 
   /**
    * Retrieves the `access_token` and stores the `response.data` on cookies using the `storage`.
    *
-   * @param {{ username: string, password: string }} data - Request content, e.g., `username` and `password`.
-   * @param {RequestInit} [options] - Optional configuration.
-   * @returns {Promise<Token>} A response promise.
+   * @param data Request content, e.g., `username` and `password`.
+   * @param options Optional configuration.
+   * @returns A response promise.
    */
-  getAccessToken (data, options = {}) {
+  public getAccessToken = (data: { username: string, password: string, [key:string]: any }, options: Partial<RequestInit> = {}): Promise<Token> => {
     data = {
       client_id: this.config.clientId,
       grant_type: 'password',
@@ -123,11 +108,11 @@ export class AuthenticationService {
    * Retrieves the `refresh_token` and stores the `response.data` on cookies
    * using the `storage`.
    *
-   * @param {object} [data] - Request content.
-   * @param {RequestInit} [options] - Optional configuration.
-   * @return {Promise<Token>} A response promise.
+   * @param data Request content.
+   * @param options Optional configuration.
+   * @return A response promise.
    */
-  async getRefreshToken (data, options = {}) {
+  public getRefreshToken = async (data: Partial<Token> & { [key:string]: any }, options: Partial<RequestInit> = {}): Promise<Token> => {
     try {
       const token = await this.keychain.getToken()
 
@@ -170,11 +155,11 @@ export class AuthenticationService {
    * Revokes the `token` and removes the stored `token` from cookies
    * using the `storage`.
    *
-   * @param {Token} data - Request content.
-   * @param {RequestInit} [options] - Optional configuration.
-   * @return {Promise<boolean>} A response promise.
+   * @param data - Request content.
+   * @param options - Optional configuration.
+   * @return A response promise.
    */
-  async revokeToken (data, options = {}) {
+  public revokeToken = async (data: Partial<Token> & { [key:string]: any }, options: Partial<RequestInit> = {}): Promise<void> => {
     try {
       const token = await this.keychain.getToken()
 
@@ -207,10 +192,7 @@ export class AuthenticationService {
     }
   }
 
-  /**
-   * @returns {Promise<boolean>}
-   */
-  isAuthenticated () {
+  public isAuthenticated = (): Promise<boolean> => {
     return this.keychain.getToken()
       .then(token => Boolean(typeof token === 'object' && token['access_token']))
   }

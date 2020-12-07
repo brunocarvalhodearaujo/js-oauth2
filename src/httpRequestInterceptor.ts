@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2020-present, Bruno Carvalho de Araujo.
+ * All rights reserved.
+ *
+ * This source code is licensed under the license found in the LICENSE file in
+ * the root directory of this source tree.
+ */
+
 import { AuthenticationService } from './AuthenticationService'
 import fetchIntercept from 'fetch-intercept'
 
@@ -5,10 +13,9 @@ import fetchIntercept from 'fetch-intercept'
  * intercept and manipulate requests
  */
 class HttpRequestInterceptor {
-  /**
-   * @param {AuthenticationService} service
-   */
-  constructor (service) {
+  private service: AuthenticationService
+
+  constructor (service: AuthenticationService) {
     if (!(service instanceof AuthenticationService)) {
       throw new Error('service must be a instance of `AuthenticationService`')
     }
@@ -22,7 +29,7 @@ class HttpRequestInterceptor {
    * @param {string|Request} url
    * @param {RequestInfo} config
    */
-  async request (url, config) {
+  request = async (url: string, config) => {
     try {
       if (url.includes(this.service.config.baseUrl)) {
         const authorizationHeader = await this.service.keychain.getAuthorizationHeader()
@@ -48,7 +55,7 @@ class HttpRequestInterceptor {
   /**
    * @param {Response} response
    */
-  async response (response) {
+  response = async (response) =>{
     try {
       if (response.url.includes(this.service.config.baseUrl)) {
         /**
@@ -85,12 +92,8 @@ class HttpRequestInterceptor {
   }
 }
 
-/**
- * @param {AuthenticationService} service
- * @returns {{ unregister: () => void }}
- */
-const interceptor = service => {
-  return fetchIntercept.register(new HttpRequestInterceptor(service))
+const interceptor = (service: AuthenticationService) => {
+  return fetchIntercept.register(new HttpRequestInterceptor(service) as any)
 }
 
 export default interceptor

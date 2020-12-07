@@ -1,10 +1,15 @@
+/**
+ * Copyright (c) 2020-present, Bruno Carvalho de Araujo.
+ * All rights reserved.
+ *
+ * This source code is licensed under the license found in the LICENSE file in
+ * the root directory of this source tree.
+ */
+
 import { Keychain } from '../src/Keychain'
 
 describe('Keychain', () => {
-  /**
-   * @type {Keychain}
-   */
-  let keychain
+  let keychain: Keychain
 
   beforeAll(() => {
     keychain = new Keychain()

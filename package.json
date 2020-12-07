@@ -12,40 +12,49 @@
   "license": "MIT",
   "author": "Bruno Carvalho de Araujo <brunocarvalhodearaujo@gmail.com>",
   "main": "dist/index.js",
-  "typings": "index.d.ts",
+  "typings": "dist/index.d.ts",
   "repository": {
     "url": "https://github.com/brunocarvalhodearaujo/js-oauth2.git",
     "type": "git"
   },
   "scripts": {
-    "test": "jest --coverage",
-    "prepublish": "babel src --out-dir dist"
+    "test": "jest --runInBand --no-cache --forceExit --coverage",
+    "build": "tsc -d",
+    "prepublish": "npm run build"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-latest": "^6.24.1",
-    "jest": "^23.6.0"
+    "jest": "^26.6.3",
+    "ts-jest": "^26.4.4",
+    "typescript": "^4.1.2"
   },
   "dependencies": {
-    "babel-runtime": "^6.26.0",
-    "events": "^3.0.0",
+    "@types/lodash.omit": "^4.5.6",
+    "events": "^3.2.0",
     "fetch-intercept": "^2.3.1",
     "lodash.omit": "^4.5.0",
     "querystring": "^0.2.0"
   },
   "jest": {
     "verbose": true,
+    "preset": "ts-jest",
+    "testEnvironment": "node",
     "coverageReporters": [
-      "text-summary"
+      "text-summary",
+      "lcov"
     ],
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.{ts,js}",
+      "!src/**/index.{ts,js}",
+      "!src/**/*.{test,spec}.{ts,js}"
+    ],
+    "testRegex": "(test|src|__test__)/.*\\.(spec|test)\\.(js|ts)$",
     "coverageThreshold": {
       "global": {
+        "statements": 75,
         "branches": 75,
         "functions": 75,
-        "lines": 75,
-        "statements": 75
+        "lines": 75
       }
     }
   }
